@@ -1,0 +1,64 @@
+name: pre-commit
+
+on:
+  workflow_call:
+
+env:
+    TERRAFORM_VERSION: 1.3.7
+    TERRAFORM_DOCS_VERSION: 0.15.0
+    TFLINT_VERSION: 0.44.1
+    #TFSEC_VERSION: 0.58.4
+    TERRASCAN_VERSION: 1.9.0
+    TF_IN_AUTOMATION: "true"
+    AWS_REGION: us-west-2
+    AWS_STS_REGIONAL_ENDPOINTS: regional
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/cache@v2
+      id: cache-tools
+      with:
+        path: tools
+        key: ${{ runner.os }}-tools-${{ env.TERRAFORM_VERSION }}-${{ env.TERRAFORM_DOCS_VERSION }}-${{ env.TFLINT_VERSION }}-${{ env.TFSEC_VERSION }}-${{ env.TERRASCAN_VERSION }}
+    - name: Download build tools
+      if: steps.cache-tools.outputs.cache-hit != 'true'
+      run: |
+        sudo apt-get update
+
+        # download and untar in tools
+        mkdir tools
+        pushd tools
+
+        echo "install terraform-docs"
+        curl -L https://github.com/terraform-docs/terraform-docs/releases/download/v${TERRAFORM_DOCS_VERSION}/terraform-docs-v${TERRAFORM_DOCS_VERSION}-linux-amd64.tar.gz > terraform-docs.tgz
+        tar xzf terraform-docs.tgz
+        chmod +x terraform-docs
+        echo "install tflint"
+        curl -L https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VERSION}/tflint_linux_amd64.zip > tflint.zip
+        unzip tflint.zip
+        rm tflint.zip
+
+        echo "install tfsec"
+        curl -L https://github.com/aquasecurity/tfsec/releases/download/${TFSEC_VERSION}/tfsec-linux-amd64 > tfsec
+        chmod +x tfsec
+
+        echo "install terrascan"
+        curl -L https://github.com/accurics/terrascan/releases/download/v${TERRASCAN_VERSION}/terrascan_${TERRASCAN_VERSION}_Linux_x86_64.tar.gz > terrascan.tar.gz
+        tar -xf terrascan.tar.gz terrascan
+        rm terrascan.tar.gz
+
+        # return to working dir
+        popd
+    - name: Install build tools
+      run: |
+        pushd tools
+        sudo mv terrascan /usr/bin/
+        sudo mv tfsec /usr/bin/
+        sudo mv tflint /usr/bin/
+        sudo mv terraform-docs /usr/bin/
+        popd
+    - uses: actions/setup-python@v2
+    - uses: pre-commit/action@v3.0.0
