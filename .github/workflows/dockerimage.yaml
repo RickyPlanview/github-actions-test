@@ -16,8 +16,4 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-docker@v1
 
-      - name: Build Docker image
-        run: docker build -t my-spring-app .
-      
-      - name: Run Docker container
-        run: docker run -p 8080:8080 -e SERVER_PORT=9090 my-spring-app
+
