@@ -26,9 +26,5 @@ jobs:
 
       - name: Build and tag Docker image
         run: |
-          docker build -t .
-          docker tag my-spring-app:latest 649106995816.dkr.ecr.us-east-2.amazonaws.com/my-mongodb:latest
-
-      - name: Push Docker image to ECR
-        run: |
-          docker push 649106995816.dkr.ecr.us-east-2.amazonaws.com/my-mongodb:latest
+          docker build  .
+        
