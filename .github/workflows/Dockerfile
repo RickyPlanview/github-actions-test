@@ -1,14 +1,12 @@
-# Use an official MongoDB as the base image
-FROM mongo:latest
+FROM node:latest
 
-# Set the working directory in the container
-WORKDIR /data
+WORKDIR /usr/src/app
 
-# Copy MongoDB configuration file to the container
-COPY mongod.conf /etc/mongod.conf
+COPY package.json ./
 
-# Expose MongoDB port
-EXPOSE 27017
+RUN npm install
 
-# Set the command to run when the container starts
-CMD ["mongod", "--config", "/etc/mongod.conf"]
+COPY . .
+
+EXPOSE 4000
+CMD [ "node", "index.js" ]
