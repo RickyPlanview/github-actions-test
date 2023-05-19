@@ -1,24 +1,20 @@
-name: Notify and close stale PRs after 10 days
+name: Octo Organization CI
 
 on:
-  schedule:
-    - cron: "0 8 * * *"
-
-permissions:
-  contents: read
-  pull-requests: write
-  repository-projects: read
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
-  check-stale-pr:
+  build:
     runs-on: ubuntu-latest
-    
-    steps:
-    
-      - name: Jane Hello World Action
-        uses: u0324020/actions-helloword@v1.0
 
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run a one-line script
+        run: echo Hello from Octo Organization
+        
       - name: Close Stale Issues
         uses: actions/stale@v4.1.1
-    
-    
