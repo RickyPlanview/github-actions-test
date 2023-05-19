@@ -12,7 +12,12 @@ permissions:
 jobs:
   check-stale-pr:
     runs-on: ubuntu-latest
+    
     steps:
+    
+      - name: Jane Hello World Action
+        uses: u0324020/actions-helloword@v1.0
+
       - name: Close Stale Issues
         uses: actions/stale@v4.1.1
     
